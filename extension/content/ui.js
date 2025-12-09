@@ -531,8 +531,12 @@ const SurfaceFlowUI = {
   async syncWithBackend() {
     const API_BASE = 'http://localhost:8000/api/v1';
     
+    console.log('[SurfaceFlow] Starting backend sync...');
+    
     try {
       const jobData = this.jobData || window.BuildertrendExtractor?.extractJobData() || {};
+      
+      console.log('[SurfaceFlow] Sending job data to backend:', jobData);
       
       // Call the hotel search API
       const response = await fetch(`${API_BASE}/buildertrend/hotel-booking/search/`, {
@@ -553,16 +557,18 @@ const SurfaceFlowUI = {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('[SurfaceFlow] Backend sync successful:', data);
+        console.log('[SurfaceFlow] ✅ Backend sync successful:', data);
+        console.log('[SurfaceFlow] Booking Job ID:', data.booking_job_id);
         this.backendBookingJobId = data.booking_job_id;
         
         // Store for later use when approving
         this.backendHotels = data.hotels;
       } else {
-        console.warn('[SurfaceFlow] Backend sync failed:', response.status);
+        console.error('[SurfaceFlow] ❌ Backend sync failed:', response.status, response.statusText);
       }
     } catch (error) {
-      console.warn('[SurfaceFlow] Could not connect to backend:', error.message);
+      console.error('[SurfaceFlow] ❌ Could not connect to backend:', error.message);
+      console.error('[SurfaceFlow] Full error:', error);
       // Continue with mock data if backend is unavailable
     }
   },
@@ -660,9 +666,13 @@ const SurfaceFlowUI = {
     const hotelId = selectedCard.dataset.hotelId;
     const hotel = this.mockHotelResults.find(h => h.id === hotelId);
 
+    console.log('[SurfaceFlow] Requesting approval for hotel:', hotelId);
+    console.log('[SurfaceFlow] Backend Booking Job ID:', this.backendBookingJobId);
+
     // Try to approve through backend
     if (this.backendBookingJobId) {
       try {
+        console.log('[SurfaceFlow] Sending approval request to backend...');
         const response = await fetch('http://localhost:8000/api/v1/buildertrend/hotel-booking/approve/', {
           method: 'POST',
           headers: {
@@ -677,11 +687,15 @@ const SurfaceFlowUI = {
         
         if (response.ok) {
           const data = await response.json();
-          console.log('[SurfaceFlow] Booking approved:', data);
+          console.log('[SurfaceFlow] ✅ Booking approved:', data);
+        } else {
+          console.error('[SurfaceFlow] ❌ Approval failed:', response.status, response.statusText);
         }
       } catch (error) {
-        console.warn('[SurfaceFlow] Could not approve through backend:', error.message);
+        console.error('[SurfaceFlow] ❌ Could not approve through backend:', error.message);
       }
+    } else {
+      console.warn('[SurfaceFlow] ⚠️ No backend booking job ID - backend may not be running');
     }
 
     // Show confirmation message
@@ -718,7 +732,7 @@ const SurfaceFlowUI = {
     });
 
     modal.querySelector('#sf-view-portal-btn').addEventListener('click', () => {
-      window.open('http://localhost:3000/modules/hotel-booking', '_blank');
+      window.open('http://localhost:3000/dashboard/modules/AM-002', '_blank');
     });
   },
 
