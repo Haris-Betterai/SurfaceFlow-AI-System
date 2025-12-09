@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "name": "SurfaceFlow AI",
+  "description": "Trigger automations directly from Buildertrend and other web apps",
+  "version": "1.0.0",
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "notifications"
+  ],
+
+  "host_permissions": [
+    "https://*.buildertrend.com/*",
+    "https://*.buildertrend.net/*",
+    "http://localhost:8000/*",
+    "https://api.surfaceflow.ai/*"
+  ],
+
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.buildertrend.com/*",
+        "https://*.buildertrend.net/*"
+      ],
+      "js": [
+        "content/detector.js",
+        "content/extractor.js",
+        "content/ui.js",
+        "content/main.js"
+      ],
+      "css": ["content/styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    }
+  },
+
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

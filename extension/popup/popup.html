@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SurfaceFlow AI</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="logo">
+        <span class="logo-icon">🌊</span>
+        <span class="logo-text">SurfaceFlow AI</span>
+      </div>
+      <div class="status-indicator online" id="status-indicator">
+        <span class="status-dot"></span>
+        <span class="status-text">Connected</span>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="popup-content" id="popup-content">
+      <!-- User Info (when logged in) -->
+      <div class="user-section" id="user-section">
+        <div class="user-avatar">👤</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name">Demo User</div>
+          <div class="user-email" id="user-email">demo@surfaceflow.ai</div>
+        </div>
+        <button class="btn-icon" id="logout-btn" title="Logout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Available Modules -->
+      <div class="modules-section">
+        <h3 class="section-title">Available Automations</h3>
+        
+        <div class="module-card">
+          <div class="module-icon">🏨</div>
+          <div class="module-info">
+            <div class="module-name">Hotel Booking</div>
+            <div class="module-desc">Book hotels for crew from Buildertrend</div>
+          </div>
+          <div class="module-status active">
+            <span class="status-badge">Active</span>
+          </div>
+        </div>
+
+        <div class="module-card coming-soon">
+          <div class="module-icon">📄</div>
+          <div class="module-info">
+            <div class="module-name">Document Generation</div>
+            <div class="module-desc">Auto-generate project documents</div>
+          </div>
+          <div class="module-status">
+            <span class="status-badge soon">Coming Soon</span>
+          </div>
+        </div>
+
+        <div class="module-card coming-soon">
+          <div class="module-icon">📋</div>
+          <div class="module-info">
+            <div class="module-name">Permit Submission</div>
+            <div class="module-desc">Auto-submit permit applications</div>
+          </div>
+          <div class="module-status">
+            <span class="status-badge soon">Coming Soon</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="activity-section">
+        <h3 class="section-title">Recent Activity</h3>
+        <div class="activity-list" id="activity-list">
+          <div class="activity-item">
+            <div class="activity-icon success">✓</div>
+            <div class="activity-info">
+              <div class="activity-title">Hotel booked - Hyatt Place</div>
+              <div class="activity-time">2 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon pending">⏳</div>
+            <div class="activity-info">
+              <div class="activity-title">Awaiting approval - Holiday Inn</div>
+              <div class="activity-time">5 hours ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <a href="#" class="footer-link" id="open-portal">Open Portal</a>
+      <span class="footer-divider">•</span>
+      <a href="#" class="footer-link" id="settings">Settings</a>
+      <span class="footer-divider">•</span>
+      <span class="footer-version">v1.0.0</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
