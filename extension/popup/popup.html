@@ -22,7 +22,7 @@
 
     <!-- Content -->
     <main class="popup-content" id="popup-content">
-      <!-- User Info (when logged in) -->
+      <!-- User Info -->
       <div class="user-section" id="user-section">
         <div class="user-avatar">👤</div>
         <div class="user-info">
@@ -38,11 +38,27 @@
         </button>
       </div>
 
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-value success" id="stat-completed">12</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value warning" id="stat-pending">3</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-saved">$4,250</div>
+          <div class="stat-label">Saved</div>
+        </div>
+      </div>
+
       <!-- Available Modules -->
       <div class="modules-section">
-        <h3 class="section-title">Available Automations</h3>
+        <h3 class="section-title">Automations</h3>
         
-        <div class="module-card">
+        <div class="module-card" id="module-hotel">
           <div class="module-icon">🏨</div>
           <div class="module-info">
             <div class="module-name">Hotel Booking</div>
@@ -94,6 +110,13 @@
               <div class="activity-time">5 hours ago</div>
             </div>
           </div>
+          <div class="activity-item">
+            <div class="activity-icon success">✓</div>
+            <div class="activity-info">
+              <div class="activity-title">Booking confirmed - Marriott</div>
+              <div class="activity-time">Yesterday</div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -101,9 +124,9 @@
     <!-- Footer -->
     <footer class="popup-footer">
       <a href="#" class="footer-link" id="open-portal">Open Portal</a>
-      <span class="footer-divider">•</span>
+      <span class="footer-divider"></span>
       <a href="#" class="footer-link" id="settings">Settings</a>
-      <span class="footer-divider">•</span>
+      <span class="footer-divider"></span>
       <span class="footer-version">v1.0.0</span>
     </footer>
   </div>
