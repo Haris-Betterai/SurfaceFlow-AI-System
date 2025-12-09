@@ -20,6 +20,15 @@ urlpatterns = [
     # Automations
     path('automations/', include('automations.urls')),
     
-    # BuilderTrend Hotel Booking Module
+    # ===== PLATFORM-BASED API ROUTES =====
+    
+    # BuilderTrend Platform (legacy route - kept for backward compatibility)
     path('buildertrend/', include('buildertrend.urls')),
+    
+    # Salesforce Platform
+    path('salesforce/', include('platforms.salesforce.urls')),
+    
+    # New unified platform routes
+    # path('platforms/buildertrend/', include('platforms.buildertrend.urls')),
+    # path('platforms/salesforce/', include('platforms.salesforce.urls')),
 ]

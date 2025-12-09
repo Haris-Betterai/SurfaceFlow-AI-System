@@ -1,0 +1,4 @@
+id,booking_job_id,hotel_id,hotel_name,price,status,approved_at,confirmation_number
+30c161a0,bb23e988,IH-001,Unknown Hotel,0,approved,2025-12-09T17:01:55.403097,SF-BB23E988
+f25db600,b8142c41,IH-001,Unknown Hotel,0,approved,2025-12-09T17:08:23.453667,SF-B8142C41
+a2166f92,1fce521e,IH-001,Unknown Hotel,0,approved,2025-12-09T17:20:18.073928,SF-1FCE521E

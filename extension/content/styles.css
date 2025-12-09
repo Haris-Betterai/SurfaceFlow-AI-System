@@ -53,7 +53,7 @@
 .sf-button-container.sf-inline {
   display: inline-flex;
   padding: 0;
-  margin-top: 10px;
+  margin-left: 10px;
   background: transparent;
   border: none;
 }

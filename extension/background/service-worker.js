@@ -4,7 +4,7 @@
  */
 
 // Constants
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
 const STORAGE_KEYS = {
   AUTH_TOKEN: 'sf_auth_token',
   REFRESH_TOKEN: 'sf_refresh_token',

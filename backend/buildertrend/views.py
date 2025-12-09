@@ -8,11 +8,86 @@ from rest_framework import status
 from datetime import datetime, timedelta
 import uuid
 import random
+import csv
+import os
 
 
 # In-memory storage for demo (replace with database in production)
 BOOKING_JOBS = {}
 SYNCED_JOBS = {}
+
+# CSV file paths
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
+HOTEL_SEARCHES_CSV = os.path.join(DATA_DIR, 'hotel_searches.csv')
+BOOKING_APPROVALS_CSV = os.path.join(DATA_DIR, 'booking_approvals.csv')
+
+
+def save_hotel_search_to_csv(job_data, booking_job_id, source):
+    """Save hotel search request to CSV file"""
+    try:
+        address = job_data.get('address', {})
+        row = {
+            'id': str(uuid.uuid4())[:8],
+            'job_id': job_data.get('jobId', 'N/A'),
+            'job_name': job_data.get('jobName', 'N/A'),
+            'job_code': job_data.get('jobCode', 'N/A'),
+            'street': address.get('street', 'N/A') if isinstance(address, dict) else 'N/A',
+            'city': address.get('city', 'N/A') if isinstance(address, dict) else 'N/A',
+            'state': address.get('state', 'N/A') if isinstance(address, dict) else 'N/A',
+            'zip': address.get('zip', 'N/A') if isinstance(address, dict) else 'N/A',
+            'formatted_address': address.get('formatted', str(address)) if isinstance(address, dict) else str(address),
+            'start_date': job_data.get('startDate', 'N/A'),
+            'end_date': job_data.get('endDate', 'N/A'),
+            'guests': job_data.get('numberOfGuests', 'N/A'),
+            'special_requirements': job_data.get('specialRequirements', 'None'),
+            'source': source,
+            'booking_job_id': booking_job_id,
+            'status': 'pending_approval',
+            'created_at': datetime.utcnow().isoformat()
+        }
+        
+        # Append to CSV
+        file_exists = os.path.exists(HOTEL_SEARCHES_CSV)
+        with open(HOTEL_SEARCHES_CSV, 'a', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=row.keys())
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(row)
+        
+        print(f"💾 Saved to CSV: {HOTEL_SEARCHES_CSV}")
+        return True
+    except Exception as e:
+        print(f"❌ Error saving to CSV: {e}")
+        return False
+
+
+def save_booking_approval_to_csv(booking_job_id, hotel_id, hotel_name, price):
+    """Save booking approval to CSV file"""
+    try:
+        row = {
+            'id': str(uuid.uuid4())[:8],
+            'booking_job_id': booking_job_id,
+            'hotel_id': hotel_id,
+            'hotel_name': hotel_name,
+            'price': price,
+            'status': 'approved',
+            'approved_at': datetime.utcnow().isoformat(),
+            'confirmation_number': f'SF-{booking_job_id.upper()}'
+        }
+        
+        # Append to CSV
+        file_exists = os.path.exists(BOOKING_APPROVALS_CSV)
+        with open(BOOKING_APPROVALS_CSV, 'a', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=row.keys())
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(row)
+        
+        print(f"💾 Saved approval to CSV: {BOOKING_APPROVALS_CSV}")
+        return True
+    except Exception as e:
+        print(f"❌ Error saving approval to CSV: {e}")
+        return False
 
 
 @api_view(['POST'])
@@ -22,7 +97,24 @@ def search_hotels(request):
     Search for hotels based on job location.
     Called from Chrome extension when user clicks "Book Hotel with AI"
     """
+    # ========== PRINT STATEMENTS FOR TERMINAL VISIBILITY ==========
+    print("\n" + "=" * 60)
+    print("🏨 SURFACEFLOW - HOTEL SEARCH REQUEST RECEIVED!")
+    print("=" * 60)
+    
     job_data = request.data.get('job_data', {})
+    
+    print(f"📋 Job Data Received:")
+    print(f"   • Job ID: {job_data.get('jobId', 'N/A')}")
+    print(f"   • Job Name: {job_data.get('jobName', 'N/A')}")
+    print(f"   • Job Code: {job_data.get('jobCode', 'N/A')}")
+    print(f"   • Address: {job_data.get('address', 'N/A')}")
+    print(f"   • Start Date: {job_data.get('startDate', 'N/A')}")
+    print(f"   • End Date: {job_data.get('endDate', 'N/A')}")
+    print(f"   • Guests: {job_data.get('numberOfGuests', 'N/A')}")
+    print(f"   • Special Requirements: {job_data.get('specialRequirements', 'None')}")
+    print(f"   • Source: {request.data.get('source', 'chrome_extension')}")
+    print("=" * 60 + "\n")
     
     if not job_data:
         return Response({
@@ -54,6 +146,10 @@ def search_hotels(request):
         'created_at': datetime.utcnow().isoformat(),
         'recommended': hotels[0] if hotels else None  # Best deal
     }
+    
+    # ========== SAVE TO CSV ==========
+    source = request.data.get('source', 'chrome_extension')
+    save_hotel_search_to_csv(job_data, booking_job_id, source)
     
     return Response({
         'success': True,
@@ -103,8 +199,18 @@ def approve_booking(request):
     """
     Approve and confirm a hotel booking.
     """
+    # ========== PRINT STATEMENTS FOR TERMINAL VISIBILITY ==========
+    print("\n" + "=" * 60)
+    print("✅ SURFACEFLOW - BOOKING APPROVAL REQUEST RECEIVED!")
+    print("=" * 60)
+    
     booking_job_id = request.data.get('booking_job_id')
     hotel_id = request.data.get('hotel_id')
+    
+    print(f"📋 Approval Data:")
+    print(f"   • Booking Job ID: {booking_job_id}")
+    print(f"   • Hotel ID: {hotel_id}")
+    print("=" * 60 + "\n")
     
     if not booking_job_id:
         return Response({
@@ -116,6 +222,15 @@ def approve_booking(request):
         BOOKING_JOBS[booking_job_id]['status'] = 'approved'
         BOOKING_JOBS[booking_job_id]['approved_at'] = datetime.utcnow().isoformat()
         BOOKING_JOBS[booking_job_id]['selected_hotel_id'] = hotel_id
+        
+        # Get hotel details for CSV
+        hotels = BOOKING_JOBS[booking_job_id].get('hotels', [])
+        selected_hotel = next((h for h in hotels if h.get('id') == hotel_id), {})
+        hotel_name = selected_hotel.get('name', 'Unknown Hotel')
+        price = selected_hotel.get('price', 0)
+        
+        # ========== SAVE TO CSV ==========
+        save_booking_approval_to_csv(booking_job_id, hotel_id, hotel_name, price)
         
         return Response({
             'success': True,
@@ -129,6 +244,56 @@ def approve_booking(request):
         'success': False,
         'error': 'Booking job not found'
     }, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_hotel_searches(request):
+    """
+    Get all hotel search records from CSV for portal display.
+    """
+    try:
+        searches = []
+        if os.path.exists(HOTEL_SEARCHES_CSV):
+            with open(HOTEL_SEARCHES_CSV, 'r') as f:
+                reader = csv.DictReader(f)
+                searches = list(reader)
+        
+        return Response({
+            'success': True,
+            'count': len(searches),
+            'searches': searches
+        })
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_booking_approvals(request):
+    """
+    Get all booking approval records from CSV for portal display.
+    """
+    try:
+        approvals = []
+        if os.path.exists(BOOKING_APPROVALS_CSV):
+            with open(BOOKING_APPROVALS_CSV, 'r') as f:
+                reader = csv.DictReader(f)
+                approvals = list(reader)
+        
+        return Response({
+            'success': True,
+            'count': len(approvals),
+            'approvals': approvals
+        })
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])

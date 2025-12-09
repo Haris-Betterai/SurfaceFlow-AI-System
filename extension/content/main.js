@@ -35,9 +35,14 @@
 
     // Initialize UI components - be aggressive about showing the button
     if (window.SurfaceFlowUI) {
-      // If we're on any job-related page, show the button
+      // Check for job modals or pages
       const url = window.location.href;
+      const hasJobModal = document.querySelector('[data-testid="modalLayout"]') !== null;
+      const hasJobHeader = document.querySelector('[data-testid="jobPresentationalHeader"]') !== null;
+      const hasJobTabs = document.querySelector('[data-testid="jobTabsActionBar"]') !== null;
+      
       if (url.includes('/JobPage/') || url.includes('/Job/') || 
+          hasJobModal || hasJobHeader || hasJobTabs ||
           (context && (context.pageType === 'job_page' || context.pageType === 'job_detail'))) {
         window.SurfaceFlowUI.init(context || { pageType: 'job_page', url: url }, jobData);
       }
@@ -50,24 +55,42 @@
   }
 
   /**
-   * Setup mutation observer to detect SPA navigation
+   * Setup mutation observer to detect SPA navigation and modal opens
    */
   function setupMutationObserver(context) {
     let lastUrl = window.location.href;
+    let lastModalState = document.querySelector('[data-testid="modalLayout"]') !== null;
 
-    const observer = new MutationObserver(() => {
-      if (window.location.href !== lastUrl) {
-        lastUrl = window.location.href;
-        console.log('[SurfaceFlow] URL changed, reinitializing...');
+    const observer = new MutationObserver((mutations) => {
+      const urlChanged = window.location.href !== lastUrl;
+      const hasModal = document.querySelector('[data-testid="modalLayout"]') !== null;
+      const hasJobTabs = document.querySelector('[data-testid="jobTabsActionBar"]') !== null;
+      const modalOpened = hasModal && !lastModalState;
+      const buttonExists = document.getElementById('sf-hotel-booking-btn') !== null;
+      
+      // Re-inject if URL changed, modal opened, or we have job content without button
+      if (urlChanged || modalOpened || ((hasModal || hasJobTabs) && !buttonExists)) {
+        if (urlChanged) {
+          lastUrl = window.location.href;
+          console.log('[SurfaceFlow] URL changed, reinitializing...');
+        }
+        if (modalOpened) {
+          console.log('[SurfaceFlow] Modal opened, injecting button...');
+        }
+        if ((hasModal || hasJobTabs) && !buttonExists) {
+          console.log('[SurfaceFlow] Job content detected without button, injecting...');
+        }
+        
+        lastModalState = hasModal;
         
         // Wait for new content to load
         setTimeout(() => {
-          const newContext = window.BuildertrendDetector.detect();
-          if (newContext) {
-            const jobData = window.BuildertrendExtractor.extractJobData();
-            window.SurfaceFlowUI.init(newContext, jobData);
+          const newContext = window.BuildertrendDetector ? window.BuildertrendDetector.detect() : null;
+          const jobData = window.BuildertrendExtractor ? window.BuildertrendExtractor.extractJobData() : null;
+          if (window.SurfaceFlowUI) {
+            window.SurfaceFlowUI.init(newContext || { pageType: 'job_page', url: window.location.href }, jobData);
           }
-        }, 1000);
+        }, 500);
       }
     });
 

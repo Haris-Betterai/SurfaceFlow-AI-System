@@ -111,7 +111,7 @@ The extension currently uses mock data to demonstrate the hotel search functiona
 ## Integration with Portal
 
 The extension communicates with the SurfaceFlow Portal backend:
-- **API Endpoint**: `http://localhost:8000/api/v1/`
+- **API Endpoint**: `http://127.0.0.1:8000/api/v1/`
 - **Authentication**: JWT tokens stored in `chrome.storage.local`
 - **Automation Trigger**: `POST /automations/AM-002/trigger`
 
