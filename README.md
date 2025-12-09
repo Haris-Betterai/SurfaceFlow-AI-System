@@ -9,7 +9,7 @@ The system consists of three main components:
 ```
 SurfaceFlow AI System/
 ├── backend/          # Django REST API
-├── portal/           # Next.js Frontend Dashboard
+├── frontend/         # Next.js Frontend Dashboard
 └── extension/        # Chrome Extension for BuilderTrend
 ```
 
@@ -60,7 +60,7 @@ The backend API will be available at `http://localhost:8000`
 
 ```bash
 # Navigate to frontend directory
-cd portal/frontend
+cd frontend
 
 # Install dependencies
 npm install
@@ -105,7 +105,7 @@ cd backend && source venv/bin/activate && python manage.py runserver 0.0.0.0:800
 
 **Terminal 2 - Frontend:**
 ```bash
-cd portal/frontend && npm run dev
+cd frontend && npm run dev
 ```
 
 **Terminal 3 - Extension:**
@@ -124,7 +124,7 @@ DATABASE_URL=sqlite:///db.sqlite3
 REDIS_URL=redis://localhost:6379/0
 ```
 
-**portal/frontend/.env.local:**
+**frontend/.env.local:**
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
@@ -143,9 +143,9 @@ backend/
 └── manage.py
 ```
 
-### Frontend (`/portal/frontend`)
+### Frontend (`/frontend`)
 ```
-portal/frontend/
+frontend/
 ├── app/                 # Next.js App Router pages
 ├── components/          # React components
 └── public/              # Static assets
